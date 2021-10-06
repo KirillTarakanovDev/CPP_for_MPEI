@@ -1,0 +1,68 @@
+#include <iostream>
+#include <stdlib.h>
+#include <vector>
+
+const int N = 12;
+const int MAX_NUMBER = 1000;
+const int MAX_WIDTH = 80;
+int main() {
+   srand(time(nullptr) );
+
+    size_t columns_count;
+    std::cout << "Введите количество столбцов: ";
+    std::cin >> columns_count;
+
+    size_t numbers_count;
+    std::cout << "Введите количество чисел: ";
+    std::cin >> numbers_count;
+
+    unsigned char ch;
+    std::cout << "Сгенерировать числа? (Y/n)";
+    std::cin >> ch;
+    if (ch == 'n') {
+        return 0;
+    }
+    std::vector<int> numbers(numbers_count);
+    int min = RAND_MAX;
+    int max = 0;
+    for (size_t i = 0; i < numbers_count; ++i) {
+        int number = 0;
+        for (size_t j = 0; j < N; ++j) {
+            number += ::rand();
+        }
+         if (min > number) min = number;
+         if (max < number) max = number;
+         numbers[i] = number;
+    }
+
+
+    size_t cmin(SIZE_MAX);
+    size_t cmax(0);
+    size_t prefix_width(0);
+    std::vector<size_t> columns(columns_count);
+    int step = (max - min) / columns_count;
+    int index(min);
+    for (std::vector<size_t>::iterator it = columns.begin(); it != columns.end(); ++it, index+=step) {
+        size_t count = 0;
+        for (size_t j = 0; j < numbers_count; ++j) {
+            if (numbers[j] >= index && numbers[j] < index+step) {
+                count++;
+            }
+        }
+        if (cmin > count) cmin = count;
+        if (cmax < count) cmax = count;
+        *it = count;
+        std::string prefix = std::to_string(count) + "|";
+        if (prefix_width < prefix.size()) {
+            prefix_width = prefix.size();
+        }
+    }
+    size_t star_step = cmax > (MAX_WIDTH - prefix_width) ? cmax / (MAX_WIDTH - prefix_width) : 1;
+     for (std::vector<size_t>::const_iterator it = columns.begin(); it != columns.end(); ++it) {
+            std::string row = std::to_string(*it) + "|";
+            row.insert(0, prefix_width - row.size(), ' ');
+            for (size_t j = 0; j < *it; j+=star_step) row += "*";
+
+            std::cout << row << std::endl;
+     }
+}
