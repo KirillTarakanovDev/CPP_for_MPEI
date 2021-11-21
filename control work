@@ -1,0 +1,271 @@
+#include <iostream>
+
+struct Student {
+    char name[18];
+    uint16_t year;
+    float average_score;
+    uint8_t gender:1;
+    uint16_t courses;
+    Student* class_leader;
+};
+
+const uint8_t hex [] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+void print_in_hex(uint8_t byte) {
+    std::cout << hex[byte/sizeof(hex)] << hex[byte % sizeof(hex)];
+}
+
+void print_in_hex(const void* data, size_t size) {
+    const uint8_t* buf = (const uint8_t*)(data);
+    for (size_t i = 0; i < size; ++i) {
+        print_in_hex(buf[i]);
+        if (i > 0 && i % 16 == 0)  {
+    std::cout << std::endl;
+            continue;
+        }
+    std::cout << " ";
+    }
+}
+
+void print_in_binary(uint8_t byte) {
+    for (size_t i = 0; i < 8; ++i) {
+     std::cout << (byte > 1 ? byte % 2 : byte);
+         byte /= 2;
+    }
+}
+void print_in_binary(const void* data, size_t size) {
+    const uint8_t* buf = (const uint8_t*)(data);
+    for (size_t i = 0; i < size; ++i) {
+        print_in_binary(buf[i]);
+        if (i > 0 && i % 4 == 0)  {
+    std::cout << std::endl;
+            continue;
+        }
+    std::cout << " ";
+    }
+}
+
+void print_in_hex(uint16_t a) {
+    print_in_hex(uint8_t(a));
+    std::cout << " ";
+    print_in_hex(uint8_t(a >> 8));
+}
+
+void print_in_hex(float a) {
+    uint8_t* data = (uint8_t*)(&a);
+    for (int i = sizeof(a)-1; i >= 0; i--) {
+        print_in_hex(data[i]);
+    }
+}
+void print_in_binary(float a) {
+    uint8_t* data = (uint8_t*)(&a);
+    for (int i = sizeof(a)-1; i >=0; i--) {
+        print_in_binary(data[i]);
+    }
+}
+
+
+void print_in_binary(uint16_t a) {
+    print_in_binary(uint8_t(a));
+    std::cout << " ";
+    print_in_binary(uint8_t(a >> 8));
+}
+
+void calc(uint16_t a, uint16_t b,uint8_t operation ) {
+    uint16_t ret(0);
+    switch (operation) {
+        case '&':
+            ret = a & b;
+            break;
+        case '^':
+            ret = a ^ b;
+            break;
+        case '|':
+            ret = a | b;
+            break;
+        default:
+    std::cout << "неизвестная операция" <<std::endl;
+            return;
+    }
+
+    print_in_hex(a);
+    std::cout << " " << operation << " ";
+    print_in_hex(b);
+    std::cout << " = ";
+    print_in_hex(ret);
+    std::cout << std::endl;
+}
+
+
+int main() {
+    uint8_t bt = 255;
+    print_in_hex(bt);
+    print_in_binary(bt);
+    const char* x = "hello";
+    print_in_hex(x, 5);
+    print_in_binary(x, 5);
+
+    uint16_t a,b;
+    uint8_t oper;
+
+    std::cout << "Введите первый операнд, затем оператор (&, | или ^), затем второй операнд:";
+    std::cin >> a >> oper >> b;
+    calc(a,b, oper);
+
+    Student classmates[3] = {
+        {
+            .name = "Rachel Green",
+            .year = 1978,
+            .average_score = 4.58,
+            .gender = 0,
+            .courses = 21,
+        },
+        {
+            .name = "Monica Geller",
+            .year = 1978,
+            .average_score = 4.91,
+            .gender = 0,
+            .courses = 28,
+        },
+        {
+            .name = "Chandler Bing",
+            .year = 1978,
+            .average_score = 3.82,
+            .gender = 1,
+            .courses = 19,
+        },
+    };
+    classmates[1].class_leader = &classmates[0];
+    classmates[2].class_leader = &classmates[0];
+    std::cout << "Array" << std::endl;
+    std::cout << "\taddress: " << &classmates[0] << std::endl;
+    std::cout << "\tsize: " << sizeof(classmates) << std::endl;
+
+    std::cout << "Name" << std::endl;
+    std::cout << "\taddress: " << (void*)&classmates[1].name[0] << std::endl;
+    std::cout << "\toffset: " << offsetof(Student, name) << std::endl;
+    std::cout << "\tsize: " << sizeof(classmates[1].name) << std::endl;
+    std::cout << "\thex: "; print_in_hex(&classmates[1].name[0], sizeof(classmates[1].name));
+    std::cout << std::endl;
+    std::cout << "\tbin: "; print_in_binary(&classmates[1].name[0], sizeof(classmates[1].name));
+    std::cout << std::endl << std::endl;
+
+    std::cout << "Year" << std::endl;
+    std::cout << "\taddress: " << &classmates[1].year << std::endl;
+    std::cout << "\toffset: " << offsetof(Student, year) << std::endl;
+    std::cout << "\tsize: " << sizeof(classmates[1].year) << std::endl;
+    std::cout << "\thex: "; print_in_hex(classmates[1].year);
+    std::cout << std::endl;
+    std::cout << "\tbin: "; print_in_binary(classmates[1].year);
+    std::cout << std::endl << std::endl;
+
+    std::cout << "Average Score" << std::endl;
+    std::cout << "\taddress: " << &classmates[1].average_score << std::endl;
+    std::cout << "\toffset: " << offsetof(Student, average_score) << std::endl;
+    std::cout << "\tsize: " << sizeof(classmates[1].average_score) << std::endl;
+    std::cout << "\thex: "; print_in_hex(classmates[1].average_score);
+    std::cout << std::endl;
+    std::cout << "\tbin: "; print_in_binary(classmates[1].average_score);
+    std::cout << std::endl << std::endl;
+
+    std::cout << "Courses" << std::endl;
+    std::cout << "\taddress: " << &classmates[1].courses << std::endl;
+    std::cout << "\toffset: " << offsetof(Student, courses) << std::endl;
+    std::cout << "\tsize: " << sizeof(classmates[1].courses) << std::endl;
+    std::cout << "\thex: "; print_in_hex(classmates[1].courses);
+    std::cout << std::endl;
+    std::cout << "\tbin: "; print_in_binary(classmates[1].courses);
+    std::cout << std::endl << std::endl;
+
+    std::cout << "Class Leader" << std::endl;
+    std::cout << "\taddress: " << &classmates[1].year << std::endl;
+    std::cout << "\toffset: " << offsetof(Student, year) << std::endl;
+    std::cout << "\tsize: " << sizeof(classmates[1].year) << std::endl;
+    std::cout << "\thex: "; print_in_hex(classmates[1].year);
+    std::cout << std::endl;
+    std::cout << "\tbin: "; print_in_binary(classmates[1].year);
+    std::cout << std::endl << std::endl;
+
+    for (size_t i = 0; i < sizeof(classmates) / sizeof(Student); i++) {
+        std::cout << "Student " << (i+1) << std::endl;
+        std::cout << "\tname:"; print_in_hex(&classmates[i].name[0], sizeof(classmates[i].name)); std::cout << std::endl;
+        std::cout << "\tyear:"; print_in_hex(classmates[i].year); std::cout << std::endl;
+        std::cout << "\taverage_score:"; print_in_hex(classmates[i].average_score); std::cout << std::endl;
+        std::cout << "\tgender:"; print_in_hex(classmates[i].gender); std::cout << std::endl;
+        std::cout << "\tcourses:"; print_in_hex(classmates[i].courses); std::cout << std::endl;
+        std::cout << std::endl << std::endl;
+    }
+
+
+    // 4
+    char forbidden[] = {'*', '"', '<', '>', '?', '|'};
+
+    char filename[255];
+    std::cout << "Enter filename: ";
+    scanf("%s", filename);
+
+    for (size_t i = 0; i < strlen(filename); ++i) {
+        filename[i] = (char)tolower(filename[i]);
+    }
+
+    for (size_t i = 0; i < sizeof(forbidden);i++) {
+        if (strchr(filename, forbidden[i]) != nullptr) {
+            std::cout << "Forbidden character in filename" << std::endl;
+            return 1;
+        }
+    }
+    char *dup = strchr(filename, ':');
+    if (dup != nullptr) {
+        if (dup - &filename[0] != 1) {
+             std::cout << "invalid colon in filename" << std::endl;
+             return 1;
+        }
+        if (filename[0] < 'a' || filename[0] > 'z') {
+            std::cout << "invalid first char in filename" << std::endl;
+            return 1;
+        }
+
+        if (filename[2] != '\\') {
+          std::cout << "invalid slash char in filename" << std::endl;
+          return 1;
+        }
+    }
+
+    char *ext = strrchr(filename, '.');
+    if (ext != nullptr) {
+        if (strncmp(ext, ".txt", 4)) {
+            std::cout << "invalid extension in filename" << std::endl;
+            return 1;
+        }
+    } else {
+        memcpy(&filename[strlen(filename)], ".txt\0", 5);
+    }
+    FILE * fp = fopen(filename, "r");
+    if (fp == nullptr) {
+        std::cout << "could not open file " <<  filename << " " << std::endl;
+        return 1;
+    }
+    fseek(fp, 0, SEEK_END);
+    long int filesize = ftell(fp);
+    char *data = (char*)calloc(filesize, 1);
+    size_t offset = 0;
+    fseek(fp, 0, SEEK_SET);
+    while (offset < filesize) {
+        offset += fread(&data[offset], 1, filesize, fp);
+    }
+    fclose(fp);
+
+    char search[255];
+    std::cout << "Search: ";
+    scanf("%s", search);
+
+    char *cursor = strstr(data, search);
+    size_t count = 0;
+    while (cursor != nullptr) {
+        count++;
+        cursor = strstr(cursor+1, search);
+    }
+
+    std::cout << "Search count: " << count << std::endl;
+    free(data);
+}
+
