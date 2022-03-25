@@ -1,0 +1,45 @@
+1)
+
+
+for $a in doc("C:/books.xml")//book[@id<'bk107']/*
+order by xs:string($a/description) ascending 
+return typeswitch($a)
+case $b as element(title) return $b
+case $b as element(author) return $b
+default return ''
+
+
+
+for $b in doc("C:/books.xml")//book
+where $b/@id<'bk107'
+order by xs:string($b/description) descending
+return $b/author
+
+
+
+for $b in doc("C:/books.xml")//book
+where $b/@id<'bk107'
+order by xs:string($b/description) descending
+return <book> {$b/author, $b/title} </book> 
+
+
+2)
+
+
+
+for $a in doc("C:/books.xml")//book
+where $a/author
+return <author> {data($a/author)}</author>
+
+
+for $a in doc("C:/books.xml")//book
+let $a := substring-after($a/author, ",")
+order by xs:string($a/author) 
+return <author> {data($a/author)}</author>
+
+
+for $a in doc("C:/books.xml")//book
+let $a := substring-after($a/author, ",")
+order by $a
+return $a
+
