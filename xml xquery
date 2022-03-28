@@ -43,3 +43,11 @@ let $a := substring-after($a/author, ",")
 order by $a
 return $a
 
+
+
+
+declare context item :=doc("C:/books.xml");
+for $x in distinct-values(/catalog//book/author/data())
+where count(/catalog//book[author=$x]) = 3
+order by $x
+return $x
